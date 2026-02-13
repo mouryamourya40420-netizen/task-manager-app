@@ -1,0 +1,32 @@
+import express from "express";
+import {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from "../controllers/userController.js";
+import validator from "../middlewares/validator.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+} from "../validators/userValidator.js";
+import {requireAuth} from '../middlewares/auth.js';
+import { authorizeRoles } from "../middlewares/role.js";
+
+
+const router = express.Router();
+
+router.post("/", requireAuth, authorizeRoles("admin"),validator(createUserSchema), createUser);
+router.get("/", requireAuth, getAllUsers);
+router.get("/:id", requireAuth, authorizeRoles("admin"), getUserById);
+router.put(
+  "/:id",
+  requireAuth,
+  authorizeRoles("admin"),
+  validator(updateUserSchema),
+  updateUser,
+);
+router.delete("/:id", requireAuth, authorizeRoles("admin"), deleteUser);
+
+export default router;
